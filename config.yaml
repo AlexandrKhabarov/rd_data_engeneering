@@ -1,0 +1,13 @@
+authorization:
+  auth_url: "https://robot-dreams-de-api.herokuapp.com/auth"
+  username: ""
+  password: ""
+gathering:
+  product_url: "https://robot-dreams-de-api.herokuapp.com/out_of_stock"
+  target_path: "./target"
+  timeout: 30
+  ingestion_timestamp: "2021-04-11T21-56-00"
+  dates:
+    - "2021-01-02"
+    - "2021-01-03"
+    - "2021-01-04"

@@ -1,0 +1,5 @@
+-r common.txt
+
+responses==0.13.2
+pytest==6.2.3
+pytest-mock==3.5.1
