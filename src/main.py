@@ -16,7 +16,7 @@ class Args:
 
 def parse_args(manual_args: Optional[List[str]] = None) -> Args:
     parser = ArgumentParser()
-    parser.add_argument("--CONFIG_PATH", type=str, required=True)
+    parser.add_argument("--CONFIG_PATH", type=str, required=True, default="./config.yaml")
 
     raw_args = parser.parse_args(manual_args)
 
