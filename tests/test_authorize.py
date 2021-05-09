@@ -2,8 +2,8 @@ from typing import Final
 
 import pytest
 
-from src.authorizer import Authorizer
-from src.errors import AuthorizationFailed
+from dags.src.authorizer import Authorizer
+from dags.src.errors import AuthorizationFailed
 
 _TESTED_TOKEN: Final = "tested-token"
 

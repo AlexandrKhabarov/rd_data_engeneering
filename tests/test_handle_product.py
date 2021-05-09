@@ -1,7 +1,7 @@
 import uuid
 from typing import Final
 
-from src.handler import ProductHandler
+from dags.src.handler import ProductHandler
 
 _INGESTION_TIMESTAMP: Final = "2020-12-12T12-12-12"
 _REQUESTED_DATE: Final = "2021-01-02"

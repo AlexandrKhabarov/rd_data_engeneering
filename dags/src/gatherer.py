@@ -3,8 +3,8 @@ from typing import Dict
 import requests
 from requests import HTTPError
 
-from src.errors import GatherFailed
-from src.interfaces import Authorizer
+from dags.src.errors import GatherFailed
+from dags.src.interfaces import Authorizer
 
 
 class ProductGatherer:
