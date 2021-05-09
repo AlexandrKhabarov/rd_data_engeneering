@@ -1,7 +1,16 @@
 # rd_data_engeneering
 Training project for robot dreams
 
-## How to start
+## Running
+
+```bash
+docker-compose run airflow-init
+docker-compose up
+```
+
+Access link at [link](http://localhost:8080/) and run *shop_etl* pipeline.
+
+## How to start development locally
 
 Install development requirements:
 
