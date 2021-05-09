@@ -1,10 +1,10 @@
 import uuid
 from typing import Final
 
-from src.authorizer import Authorizer
-from src.gatherer import ProductGatherer
-from src.handler import ProductHandler
-from src.job import Job
+from dags.out_of_stock_elt.authorizer import Authorizer
+from dags.out_of_stock_elt.gatherer import ProductGatherer
+from dags.out_of_stock_elt.handler import ProductHandler
+from dags.out_of_stock_elt.job import Job
 
 _TIMEOUT: Final = 30.0
 
@@ -33,7 +33,7 @@ def test_job(
         ({'access_token': "token"}, 200)
     ])
 
-    mocked_uuid = mocker.patch('src.handler.uuid')
+    mocked_uuid = mocker.patch('out_of_stock_elt.handler.uuid')
     mocked_uuid.uuid4.side_effect = [_FIRST_UUID4, _SECOND_UUID4]
 
     gatherer = ProductGatherer(
@@ -50,7 +50,7 @@ def test_job(
     assert_handled_product_paths(
         actual_paths,
         [
-            create_expected_target_path(tmpdir, _INGESTION_TIMESTAMP, _FIRST_DATE, str(_FIRST_UUID4)),
-            create_expected_target_path(tmpdir, _INGESTION_TIMESTAMP, _SECOND_DATE, str(_SECOND_UUID4))
+            str(create_expected_target_path(tmpdir, _INGESTION_TIMESTAMP, _FIRST_DATE, str(_FIRST_UUID4))),
+            str(create_expected_target_path(tmpdir, _INGESTION_TIMESTAMP, _SECOND_DATE, str(_SECOND_UUID4)))
         ]
     )
