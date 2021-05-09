@@ -8,7 +8,11 @@ docker-compose run airflow-init
 docker-compose up
 ```
 
-Access link at [link](http://localhost:8080/) and run *shop_etl* pipeline.
+Create connection in Airflow Web UI to postgres with dshop db.
+
+Setup variables for *out_of_stock_etl* job in Airflow Web UI.
+
+Access [link](http://localhost:8080/) and run *shop_etl* pipeline.
 
 ## How to start development locally
 
