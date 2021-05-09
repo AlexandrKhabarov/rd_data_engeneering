@@ -2,8 +2,8 @@ from typing import Final
 
 import pytest
 
-from dags.src.authorizer import Authorizer
-from dags.src.errors import AuthorizationFailed
+from dags.out_of_stock_elt.authorizer import Authorizer
+from dags.out_of_stock_elt.errors import AuthorizationFailed
 
 _TESTED_TOKEN: Final = "tested-token"
 

@@ -2,7 +2,7 @@ from airflow import DAG
 from airflow.operators.python import PythonVirtualenvOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 
-from src.main import main
+from out_of_stock_elt.main import main
 
 dag = DAG(
     dag_id="shop_etl"

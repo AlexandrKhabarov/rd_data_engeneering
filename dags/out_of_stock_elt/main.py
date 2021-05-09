@@ -2,11 +2,11 @@ from argparse import ArgumentParser
 from dataclasses import dataclass
 from typing import List, Optional
 
-from dags.src.authorizer import Authorizer
-from dags.src.config import Config
-from dags.src.gatherer import ProductGatherer
-from dags.src.handler import ProductHandler
-from dags.src.job import Job
+from dags.out_of_stock_elt.authorizer import Authorizer
+from dags.out_of_stock_elt.config import Config
+from dags.out_of_stock_elt.gatherer import ProductGatherer
+from dags.out_of_stock_elt.handler import ProductHandler
+from dags.out_of_stock_elt.job import Job
 
 
 @dataclass

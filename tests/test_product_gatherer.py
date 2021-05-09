@@ -2,9 +2,9 @@ from typing import Final
 
 import pytest
 
-from dags.src.authorizer import Authorizer
-from dags.src.errors import GatherFailed
-from dags.src.gatherer import ProductGatherer
+from dags.out_of_stock_elt.authorizer import Authorizer
+from dags.out_of_stock_elt.errors import GatherFailed
+from dags.out_of_stock_elt.gatherer import ProductGatherer
 
 _TESTED_DATE: Final = "2021-01-02"
 _EXPECTED_PRODUCT_ID: Final = 1
