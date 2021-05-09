@@ -1,5 +1,5 @@
 from airflow import DAG
-from airflow.operators.python import PythonOperator
+from airflow.operators.python import PythonVirtualenvOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 
 from src.main import main
@@ -8,8 +8,13 @@ dag = DAG(
     dag_id="shop_etl"
 )
 
-dump_out_of_stock = PythonOperator(
+dump_out_of_stock = PythonVirtualenvOperator(
     python_callable=main,
+    requirements=[
+        "requests==2.25.1",
+        "PyYAML==5.4.1",
+        "pydantic==1.8.1",
+    ],
     op_args=[["--config", "./config.yaml"]],
     dag=dag,
 
