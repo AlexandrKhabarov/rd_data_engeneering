@@ -1,8 +1,8 @@
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from typing import List
 
-from dags.out_of_stock_elt.errors import GatherFailed
-from dags.out_of_stock_elt.interfaces import Gatherer, Handler
+from .errors import GatherFailed
+from .interfaces import Gatherer, Handler
 
 
 class Job:
