@@ -26,7 +26,7 @@ dag = DAG(
     dag_id="shop_etl",
     default_args=default_args,
     description='Shop ETL',
-    schedule_interval=timedelta(days=1),
+    schedule_interval=timedelta(minutes=10),
     start_date=days_ago(2),
     tags=['dshop'],
 )
@@ -51,7 +51,7 @@ dump_out_of_stock = PythonVirtualenvOperator(
 )
 dump_aisles = PostgresOperator(
     task_id="dump_aisles",
-    sql=r"COPY aisles TO 'C:\tmp\ingestion_timestamp={}\aisles.csv' DELIMITER ',' CSV HEADER;".format(
+    sql=r"COPY aisles TO '/tmp/ingestion_timestamp={}/aisles.csv' DELIMITER ',' CSV HEADER;".format(
         ingestion_timestamp
     ),
     postgres_conn_id="dshop__postgres",
@@ -59,7 +59,7 @@ dump_aisles = PostgresOperator(
 )
 dump_clients = PostgresOperator(
     task_id="dump_clients",
-    sql=r"COPY clients TO 'C:\tmp\ingestion_timestamp={}\clients.csv' DELIMITER ',' CSV HEADER;".format(
+    sql=r"COPY clients TO '/tmp/ingestion_timestamp={}/clients.csv' DELIMITER ',' CSV HEADER;".format(
         ingestion_timestamp
     ),
     postgres_conn_id="dshop__postgres",
@@ -68,7 +68,7 @@ dump_clients = PostgresOperator(
 
 dump_departments = PostgresOperator(
     task_id="dump_departments",
-    sql=r"COPY departments TO 'C:\tmp\ingestion_timestamp={}\departments.csv' DELIMITER ',' CSV HEADER;".format(
+    sql=r"COPY departments TO '/tmp/ingestion_timestamp={}/departments.csv' DELIMITER ',' CSV HEADER;".format(
         ingestion_timestamp
     ),
     postgres_conn_id="dshop__postgres",
@@ -77,7 +77,7 @@ dump_departments = PostgresOperator(
 
 dump_orders = PostgresOperator(
     task_id="dump_orders",
-    sql=r"COPY orders TO 'C:\tmp\ingestion_timestamp={}\orders.csv' DELIMITER ',' CSV HEADER;".format(
+    sql=r"COPY orders TO '/tmp/ingestion_timestamp={}/orders.csv' DELIMITER ',' CSV HEADER;".format(
         ingestion_timestamp
     ),
     postgres_conn_id="dshop__postgres",
@@ -86,7 +86,7 @@ dump_orders = PostgresOperator(
 
 dump_products = PostgresOperator(
     task_id="dump_products",
-    sql=r"COPY products TO 'C:\tmp\ingestion_timestamp={}\products.csv' DELIMITER ',' CSV HEADER;".format(
+    sql=r"COPY products TO '/tmp/ingestion_timestamp={}/products.csv' DELIMITER ',' CSV HEADER;".format(
         ingestion_timestamp
     ),
     postgres_conn_id="dshop__postgres",
