@@ -1,11 +1,14 @@
 from datetime import timedelta
 
 from airflow import DAG
+from airflow.models import Variable
 from airflow.operators.python import PythonVirtualenvOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.utils.dates import days_ago
 
 from out_of_stock_elt.main import main
+
+dump_out_of_stock_variables = Variable.get("dump_out_of_stock", deserialize_json=True)
 
 default_args = {
     'owner': 'airflow',
@@ -31,10 +34,17 @@ dump_out_of_stock = PythonVirtualenvOperator(
     python_callable=main,
     requirements=[
         "requests==2.25.1",
-        "PyYAML==5.4.1",
-        "pydantic==1.8.1",
     ],
-    op_args=[["--config", "./config.yaml"]],
+    op_args=[[
+        "--AUTH_URL", dump_out_of_stock_variables['AUTH_URL'],
+        "--USERNAME", dump_out_of_stock_variables['USERNAME'],
+        "--PASSWORD", dump_out_of_stock_variables['PASSWORD'],
+        "--PRODUCT_URL", dump_out_of_stock_variables['PRODUCT_URL'],
+        "--TARGET_PATH", dump_out_of_stock_variables['TARGET_PATH'],
+        "--TIMEOUT", dump_out_of_stock_variables['TIMEOUT'],
+        "--INGESTION_TIMESTAMP", dump_out_of_stock_variables['INGESTION_TIMESTAMP'],
+        "--DATES", dump_out_of_stock_variables['DATES'],
+    ]],
     dag=dag,
 )
 dump_aisles = PostgresOperator(
