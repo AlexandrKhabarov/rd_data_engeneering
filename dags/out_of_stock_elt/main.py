@@ -2,12 +2,6 @@ from argparse import ArgumentParser
 from dataclasses import dataclass
 from typing import List, Optional
 
-from .authorizer import Authorizer
-from .config import Config
-from .gatherer import ProductGatherer
-from .handler import ProductHandler
-from .job import Job
-
 
 @dataclass
 class Args:
@@ -24,6 +18,13 @@ def parse_args(manual_args: Optional[List[str]] = None) -> Args:
 
 
 def main(manual_args: Optional[List[str]] = None) -> None:
+    from .authorizer import Authorizer
+    from .config import Config
+    from .gatherer import ProductGatherer
+    from .handler import ProductHandler
+    from .job import Job
+
+
     args = parse_args(manual_args)
     config = Config.from_yaml(args.config_path)
 
