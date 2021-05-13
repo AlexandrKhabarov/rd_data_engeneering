@@ -3,7 +3,7 @@ from datetime import timedelta
 from airflow import DAG
 from airflow.hooks.base import BaseHook
 from airflow.models import Variable
-from airflow.operators.python import PythonVirtualenvOperator
+from airflow.operators.python import PythonOperator, PythonVirtualenvOperator
 from airflow.utils.dates import days_ago
 
 from out_of_stock_elt.main import main as out_of_stock_elt
@@ -62,7 +62,7 @@ with dag:
             "--DATES", *dump_out_of_stock_variables['DATES'],
         ]],
     )
-    dump_aisles = PythonVirtualenvOperator(
+    dump_aisles = PythonOperator(
         task_id="dump_aisles",
         python_callable=dshop_elt,
         op_args=[
@@ -75,7 +75,7 @@ with dag:
             execution_date,
         ]
     )
-    dump_clients = PythonVirtualenvOperator(
+    dump_clients = PythonOperator(
         task_id="dump_clients",
         python_callable=dshop_elt,
         op_args=[
@@ -89,7 +89,7 @@ with dag:
         ]
     )
 
-    dump_departments = PythonVirtualenvOperator(
+    dump_departments = PythonOperator(
         task_id="dump_departments",
         python_callable=dshop_elt,
         op_args=[
@@ -103,7 +103,7 @@ with dag:
         ]
     )
 
-    dump_orders = PythonVirtualenvOperator(
+    dump_orders = PythonOperator(
         task_id="dump_orders",
         python_callable=dshop_elt,
         op_args=[
@@ -117,7 +117,7 @@ with dag:
         ]
     )
 
-    dump_products = PythonVirtualenvOperator(
+    dump_products = PythonOperator(
         task_id="dump_products",
         python_callable=dshop_elt,
         op_args=[
