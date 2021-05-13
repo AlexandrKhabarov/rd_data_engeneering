@@ -25,14 +25,12 @@ default_args = {
 
 execution_date = '{{ execution_date }}'
 
-target_path = f"~/{dump_out_of_stock_variables['TARGET_PATH']}"
-
-out_of_stock_path = f"{target_path}/out_of_stock"
-aisles_path = f"{target_path}/aisles"
-clients_path = f"{target_path}/clients"
-departments_path = f"{target_path}/departments"
-orders_path = f"{target_path}/orders"
-products_path = f"{target_path}/products"
+out_of_stock_path = f"{dump_out_of_stock_variables['TARGET_PATH']}/out_of_stock"
+aisles_path = f"{dump_out_of_stock_variables['TARGET_PATH']}/aisles"
+clients_path = f"{dump_out_of_stock_variables['TARGET_PATH']}/clients"
+departments_path = f"{dump_out_of_stock_variables['TARGET_PATH']}/departments"
+orders_path = f"{dump_out_of_stock_variables['TARGET_PATH']}/orders"
+products_path = f"{dump_out_of_stock_variables['TARGET_PATH']}/products"
 
 dag = DAG(
     dag_id="shop_etl",
