@@ -24,6 +24,10 @@ Setup variables in JSON format for *out_of_stock_etl* job in Airflow Web UI.
 }
 ```
 
+Setup connection to postger
+
+Setup connection to out_of_stock api via HTTP
+
 Access [link](http://localhost:8080/) and run *shop_etl* pipeline.
 
 ## How to start development locally

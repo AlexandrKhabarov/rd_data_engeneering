@@ -3,8 +3,8 @@ from typing import Dict
 import requests
 from requests import HTTPError
 
-from .errors import GatherFailed
-from .interfaces import Authorizer
+from out_of_stock_elt.errors import GatherFailed
+from out_of_stock_elt.interfaces import Authorizer
 
 
 class ProductGatherer:

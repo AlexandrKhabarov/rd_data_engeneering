@@ -1,50 +1,47 @@
-from argparse import ArgumentParser
-from dataclasses import dataclass
-from typing import List, Optional
+def main(manual_args=None):
+    from argparse import ArgumentParser
+    from dataclasses import dataclass
+    from typing import List, Optional
 
+    from out_of_stock_elt.authorizer import Authorizer
+    from out_of_stock_elt.gatherer import ProductGatherer
+    from out_of_stock_elt.handler import ProductHandler
+    from out_of_stock_elt.job import Job
 
-@dataclass
-class Args:
-    auth_url: str
-    username: str
-    password: str
-    product_url: str
-    target_path: str
-    timeout: float
-    ingestion_timestamp: str
-    dates: List[str]
+    @dataclass
+    class Args:
+        auth_url: str
+        username: str
+        password: str
+        product_url: str
+        target_path: str
+        timeout: float
+        ingestion_timestamp: str
+        dates: List[str]
 
+    def parse_args(manual_args: Optional[List[str]] = None) -> Args:
+        parser = ArgumentParser()
+        parser.add_argument("--AUTH_URL", type=str, required=True)
+        parser.add_argument("--USERNAME", type=str, required=True)
+        parser.add_argument("--PASSWORD", type=str, required=True)
+        parser.add_argument("--PRODUCT_URL", type=str, required=True)
+        parser.add_argument("--TARGET_PATH", type=str, required=True)
+        parser.add_argument("--TIMEOUT", type=float, required=True)
+        parser.add_argument("--INGESTION_TIMESTAMP", type=str, required=True)
+        parser.add_argument("--DATES", type=str, required=True, nargs="+")
 
-def parse_args(manual_args: Optional[List[str]] = None) -> Args:
-    parser = ArgumentParser()
-    parser.add_argument("--AUTH_URL", type=str, required=True)
-    parser.add_argument("--USERNAME", type=str, required=True)
-    parser.add_argument("--PASSWORD", type=str, required=True)
-    parser.add_argument("--PRODUCT_URL", type=str, required=True)
-    parser.add_argument("--TARGET_PATH", type=str, required=True)
-    parser.add_argument("--TIMEOUT", type=float, required=True)
-    parser.add_argument("--INGESTION_TIMESTAMP", type=str, required=True)
-    parser.add_argument("--DATES", type=str, required=True, nargs="+")
+        raw_args = parser.parse_args(manual_args)
 
-    raw_args = parser.parse_args(manual_args)
-
-    return Args(
-        auth_url=raw_args.AUTH_URL,
-        username=raw_args.USERNAME,
-        password=raw_args.PASSWORD,
-        product_url=raw_args.PRODUCT_URL,
-        target_path=raw_args.TARGET_PATH,
-        timeout=raw_args.TIMEOUT,
-        ingestion_timestamp=raw_args.INGESTION_TIMESTAMP,
-        dates=raw_args.DATES,
-    )
-
-
-def main(manual_args: Optional[List[str]] = None) -> None:
-    from .authorizer import Authorizer
-    from .gatherer import ProductGatherer
-    from .handler import ProductHandler
-    from .job import Job
+        return Args(
+            auth_url=raw_args.AUTH_URL,
+            username=raw_args.USERNAME,
+            password=raw_args.PASSWORD,
+            product_url=raw_args.PRODUCT_URL,
+            target_path=raw_args.TARGET_PATH,
+            timeout=raw_args.TIMEOUT,
+            ingestion_timestamp=raw_args.INGESTION_TIMESTAMP,
+            dates=raw_args.DATES,
+        )
 
     args = parse_args(manual_args)
 
@@ -63,7 +60,7 @@ def main(manual_args: Optional[List[str]] = None) -> None:
         args.target_path,
     )
     job = Job(gatherer, handler)
-    job.run(args.dates)
+    return job.run(args.dates)
 
 
 if __name__ == '__main__':
