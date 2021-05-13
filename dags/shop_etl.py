@@ -1,14 +1,17 @@
 from datetime import timedelta
 
 from airflow import DAG
+from airflow.hooks.base import BaseHook
 from airflow.models import Variable
 from airflow.operators.python import PythonVirtualenvOperator
-from airflow.providers.postgres.operators.postgres import PostgresOperator
 from airflow.utils.dates import days_ago
 
-from out_of_stock_elt.main import main
+from out_of_stock_elt.main import main as out_of_stock_elt
+from dshop_elt.main import main as dshop_elt
 
 dump_out_of_stock_variables = Variable.get("dump_out_of_stock", deserialize_json=True)
+dshop__postgres_connection = BaseHook.get_connection("dshop__postgres")
+out_of_stock__api_connection = BaseHook.get_connection("out_of_stock__api")
 
 default_args = {
     'owner': 'airflow',
@@ -20,75 +23,110 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
 }
 
-ingestion_timestamp = '{{ execution_date }}'
+execution_date = '{{ execution_date }}'
+
+target_path = f"~/{dump_out_of_stock_variables['TARGET_PATH']}"
+
+out_of_stock_path = f"{target_path}/out_of_stock"
+aisles_path = f"{target_path}/aisles"
+clients_path = f"{target_path}/clients"
+departments_path = f"{target_path}/departments"
+orders_path = f"{target_path}/orders"
+products_path = f"{target_path}/products"
 
 dag = DAG(
     dag_id="shop_etl",
     default_args=default_args,
     description='Shop ETL',
-    schedule_interval=timedelta(minutes=10),
+    schedule_interval=timedelta(seconds=10),
     start_date=days_ago(2),
     tags=['dshop'],
 )
 
-dump_out_of_stock = PythonVirtualenvOperator(
-    task_id="dump_out_of_stock",
-    python_callable=main,
-    requirements=[
-        "requests==2.25.1",
-    ],
-    op_args=[[
-        "--AUTH_URL", dump_out_of_stock_variables['AUTH_URL'],
-        "--USERNAME", dump_out_of_stock_variables['USERNAME'],
-        "--PASSWORD", dump_out_of_stock_variables['PASSWORD'],
-        "--PRODUCT_URL", dump_out_of_stock_variables['PRODUCT_URL'],
-        "--TARGET_PATH", dump_out_of_stock_variables['TARGET_PATH'],
-        "--TIMEOUT", dump_out_of_stock_variables['TIMEOUT'],
-        "--INGESTION_TIMESTAMP", ingestion_timestamp,
-        "--DATES", dump_out_of_stock_variables['DATES'],
-    ]],
-    dag=dag,
-)
-dump_aisles = PostgresOperator(
-    task_id="dump_aisles",
-    sql=r"COPY aisles TO '/tmp/ingestion_timestamp={}/aisles.csv' DELIMITER ',' CSV HEADER;".format(
-        ingestion_timestamp
-    ),
-    postgres_conn_id="dshop__postgres",
-    dag=dag
-)
-dump_clients = PostgresOperator(
-    task_id="dump_clients",
-    sql=r"COPY clients TO '/tmp/ingestion_timestamp={}/clients.csv' DELIMITER ',' CSV HEADER;".format(
-        ingestion_timestamp
-    ),
-    postgres_conn_id="dshop__postgres",
-    dag=dag
-)
+with dag:
+    dump_out_of_stock = PythonVirtualenvOperator(
+        task_id="dump_out_of_stock",
+        python_callable=out_of_stock_elt,
+        requirements=[
+            "requests==2.25.1",
+            "typing-extensions==3.7.4.3"
+        ],
+        op_args=[[
+            "--AUTH_URL", dump_out_of_stock_variables['AUTH_URL'],
+            "--USERNAME", out_of_stock__api_connection.login,
+            "--PASSWORD", out_of_stock__api_connection.password,
+            "--PRODUCT_URL", dump_out_of_stock_variables['PRODUCT_URL'],
+            "--TARGET_PATH", out_of_stock_path,
+            "--TIMEOUT", dump_out_of_stock_variables['TIMEOUT'],
+            "--INGESTION_TIMESTAMP", execution_date,
+            "--DATES", *dump_out_of_stock_variables['DATES'],
+        ]],
+    )
+    dump_aisles = PythonVirtualenvOperator(
+        task_id="dump_aisles",
+        python_callable=dshop_elt,
+        op_args=[
+            "aisles",
+            dshop__postgres_connection.schema,
+            dshop__postgres_connection.host,
+            dshop__postgres_connection.login,
+            dshop__postgres_connection.password,
+            aisles_path,
+            execution_date,
+        ]
+    )
+    dump_clients = PythonVirtualenvOperator(
+        task_id="dump_clients",
+        python_callable=dshop_elt,
+        op_args=[
+            "clients",
+            dshop__postgres_connection.schema,
+            dshop__postgres_connection.host,
+            dshop__postgres_connection.login,
+            dshop__postgres_connection.password,
+            clients_path,
+            execution_date,
+        ]
+    )
 
-dump_departments = PostgresOperator(
-    task_id="dump_departments",
-    sql=r"COPY departments TO '/tmp/ingestion_timestamp={}/departments.csv' DELIMITER ',' CSV HEADER;".format(
-        ingestion_timestamp
-    ),
-    postgres_conn_id="dshop__postgres",
-    dag=dag
-)
+    dump_departments = PythonVirtualenvOperator(
+        task_id="dump_departments",
+        python_callable=dshop_elt,
+        op_args=[
+            "departments",
+            dshop__postgres_connection.schema,
+            dshop__postgres_connection.host,
+            dshop__postgres_connection.login,
+            dshop__postgres_connection.password,
+            departments_path,
+            execution_date,
+        ]
+    )
 
-dump_orders = PostgresOperator(
-    task_id="dump_orders",
-    sql=r"COPY orders TO '/tmp/ingestion_timestamp={}/orders.csv' DELIMITER ',' CSV HEADER;".format(
-        ingestion_timestamp
-    ),
-    postgres_conn_id="dshop__postgres",
-    dag=dag
-)
+    dump_orders = PythonVirtualenvOperator(
+        task_id="dump_orders",
+        python_callable=dshop_elt,
+        op_args=[
+            "orders",
+            dshop__postgres_connection.schema,
+            dshop__postgres_connection.host,
+            dshop__postgres_connection.login,
+            dshop__postgres_connection.password,
+            orders_path,
+            execution_date,
+        ]
+    )
 
-dump_products = PostgresOperator(
-    task_id="dump_products",
-    sql=r"COPY products TO '/tmp/ingestion_timestamp={}/products.csv' DELIMITER ',' CSV HEADER;".format(
-        ingestion_timestamp
-    ),
-    postgres_conn_id="dshop__postgres",
-    dag=dag
-)
+    dump_products = PythonVirtualenvOperator(
+        task_id="dump_products",
+        python_callable=dshop_elt,
+        op_args=[
+            "products",
+            dshop__postgres_connection.schema,
+            dshop__postgres_connection.host,
+            dshop__postgres_connection.login,
+            dshop__postgres_connection.password,
+            products_path,
+            execution_date,
+        ]
+    )

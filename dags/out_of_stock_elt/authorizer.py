@@ -3,7 +3,7 @@ from typing import Dict
 import requests
 from requests import HTTPError
 
-from .errors import AuthorizationFailed
+from out_of_stock_elt.errors import AuthorizationFailed
 
 
 class Authorizer:
